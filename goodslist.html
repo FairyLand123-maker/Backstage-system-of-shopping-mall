@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>商品表单</title>
+		 <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+	</head>
+	<body style="padding: 10px; ">
+		<div class="search">
+			<button type="button" class="layui-btn" id="search"><i class="layui-icon">&#xe615;</i> 查找商品</button>
+			<span style="margin-left: 10px;">商品名称</span>
+			<input type="text" placeholder="请输入商品名称" style="width: 120px;height: 30px;"id="goods_name"/>
+			<span>价格范围</span>
+			<input type="text" style="width: 120px;height: 30px;" placeholder="最低价格" id="low_price"/>
+			<span>-</span>
+			<input type="text" style="width: 120px;height: 30px;" placeholder="最高价格" id="high_price"/>
+			<span style="margin-left: 10px;">上架时间</span>
+			<input type="text" id="goods_time" style="width: 180px; height: 30px;" placeholder="请选择一个时间范围"/>
+		</div>
+		 
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+		 
+		<script type="text/html" id="toolbarDemo">
+		</script>
+		<!-- 编辑和删除的组件 -->
+		<script type="text/html" id="barDemo">
+		  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+		</script>
+		<!-- 编辑弹窗组件 -->
+		<div id="view" style="display: none;padding: 60px;"></div>
+		<script type="text/html" id="demo">
+			<form class="layui-form" method="post">
+				<input type="text" name="goodsname" style="width: 100%;height: 25px;margin-bottom: 15px;" value="{{d.name}}" placeholder="商品名称" />
+				<input type="text" name="goodsprice" style="width: 100%;height: 25px;margin-bottom: 15px;" value="{{d.price}}" placeholder="商品价格" />
+				<div class="layui-upload">
+					<label style="display: flex; align-items: center;">
+						<button type="button" class="layui-btn" id="test1">上传图片</button>
+						<div class="layui-upload-list" style="width: 100px;height: 100px;margin-left: 10px; position: relative;text-align: center;">
+							<i class="layui-icon layui-icon-upload" style="line-height: 100px;font-size: 50px;color: #009688;"></i>
+						  <img class="layui-upload-img" id="demo1" style="width: 100%;height: 100%;position: absolute;left: 0;top: 0; background-color: transparent;"src="{{d.src}}">
+						  <p id="demoText"></p>
+						</div>
+					</label>
+				</div> 
+				<!-- 要与后台进行交互的按钮 -->
+				<button class="layui-btn" lay-submit lay-filter="formDemo">保存</button>
+			</form>
+		</script>
+		<script type="text/javascript" src="layui/layui.js"></script>
+		<script>
+			layui.use(['laydate','table','laytpl','upload','form'], function(){
+			  var laydate = layui.laydate;
+			  var table = layui.table;
+			  var laytpl=layui.laytpl;
+			  var $ = layui.$;
+			  var upload = layui.upload;
+			  var form=layui.form;
+				//日期选择
+			  laydate.render({
+			    elem: '#goods_time'//指定元素
+				 ,range: true
+			  });
+			    var backdata=[
+					{
+						"id":"01",
+						"name":"商品1",
+						"src":"layui/images/face/0.gif",
+						"time":"2021-1-29",
+						"price":"100"	
+					},
+					{
+						"id":"02",
+						"name":"商品2",
+						"src":"layui/images/face/1.gif",
+						"time":"2021-1-24",
+						"price":"99"	
+					},
+					{
+						"id":"03",
+						"name":"商品3",
+						"src":"layui/images/face/2.gif",
+						"time":"2021-11-29",
+						"price":"88"	
+					},
+					{
+						"id":"04",
+						"name":"商品4",
+						"src":"layui/images/face/3.gif",
+						"time":"2021-11-29",
+						"price":"77"	
+					},
+					{
+						"id":"05",
+						"name":"商品5",
+						"src":"layui/images/face/4.gif",
+						"time":"2021-11-29",
+						"price":"66"	
+					},
+					{
+						"id":"06",
+						"name":"商品6",
+						"src":"layui/images/face/5.gif",
+						"time":"2021-9-29",
+						"price":"55"	
+					},
+					{
+						"id":"07",
+						"name":"商品7",
+						"src":"layui/images/face/6.gif",
+						"time":"2021-10-29",
+						"price":"44"	
+					},
+					{
+						"id":"08",
+						"name":"商品8",
+						"src":"layui/images/face/7.gif",
+						"time":"2021-11-29",
+						"price":"33"	
+					},
+					{
+						"id":"09",
+						"name":"商品9",
+						"src":"layui/images/face/8.gif",
+						"time":"2021-11-29",
+						"price":"22"	
+					},
+					{
+						"id":"10",
+						"name":"商品10",
+						"src":"layui/images/face/7.gif",
+						"time":"2021-11-29",
+						"price":"11"	
+					},
+					{
+						"id":"11",
+						"name":"商品11S",
+						"src":"layui/images/face/7.gif",
+						"time":"2021-11-29",
+						"price":"00"	
+					}
+				]
+				// 查找商品获取数据
+				var newData=JSON.parse(JSON.stringify(backdata));//stringify方法序列化
+				//JSON.parse(JSON.stringify(backdata))实现对象的深拷贝
+				renderTable(newData);
+				$("#search").on("click",function(){
+					var goodsname=$("#goods_name").val().trim();//trim方法去掉前后空格
+					var lowprice=$("#low_price").val().trim();
+					var highprice=$("#high_price").val().trim();
+					var goodstime=$("#goods_time").val().trim();
+					if(goodsname){//进行筛选
+						newData=newData.filter((item,index)=>{
+							return item.name==goodsname;
+						})
+					}
+					if(lowprice){
+						newData=newData.filter((item,index)=>{
+							return item.price >= lowprice-0;
+						})
+					}
+					if(highprice){
+						newData=newData.filter((item,index)=>{
+							return item.price <= highprice-0;
+						})
+					}
+					if(goodstime){
+						var arr=goodstime.split(" ");
+						var lowtime=new Date(arr[0]);
+						var hightime=new Date(arr[2]);
+						newData=newData.filter((item,index)=>{
+							return new Date(item.time)>=lowtime&&new Date(item.time)<=hightime;
+						})
+					}
+					renderTable(newData);
+				})
+				//表格渲染
+				function renderTable(backdata){
+					table.render({
+					    elem: '#test'
+					    // ,url:'/test/table/demo1.json'  //数据接口
+						,data:backdata  //直接赋值
+					    // ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+					    // ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+					    //   title: '提示'
+					    //   ,layEvent: 'LAYTABLE_TIPS'
+					    //   ,icon: 'layui-icon-tips'
+					    // }]
+					    ,title: '商品列表'
+					    ,cols: [[
+					       // {type: 'checkbox', fixed: 'left'}
+					      {field:'id', title:'ID',  fixed: 'left', unresize: true, sort: true}
+					      ,{field:'name', title:'商品名称', edit: 'text'}
+					      ,{field:'src', title:'商品图片',templet: function(res){
+					        return '<img src="'+ res.src+'"/img>'
+					      }}
+					      ,{field:'time', title:'上架时间',  edit: 'text', sort: true}
+					      ,{field:'price', title:'价格',edit: 'text',sort:true,width:100}
+					      ,{fixed: 'right', title:'操作', toolbar: '#barDemo',width:150}
+					    ]]
+					    ,page: true
+					  });
+					  
+					  //监听行工具事件
+					  table.on('tool(test)', function(obj){
+					    var data = obj.data;
+					    //console.log(obj)
+					    if(obj.event === 'del'){
+					      layer.confirm('是否删除该商品',{
+						   icon:2
+						   },function(index){//这里需要一个接口告诉后台数据的变化（用ajax可实现）
+							 obj.del();
+							 layer.close(index);
+					   });
+					    } else if(obj.event === 'edit'){
+						   laytpl($("#demo").html()).render(data,function(html){
+							   $("#view").html(html);
+						   })
+						   
+						   //上传图片
+						   var uploadInst = upload.render({
+							  elem: '#test1'
+							  ,url: 'https://httpbin.org/post' //改成您自己的上传接口
+							  ,before: function(obj){
+								//预读本地文件示例，不支持ie8
+								obj.preview(function(index, file, result){
+								  $('#demo1').attr('src', result); //图片链接（base64）
+								});
+							  }
+							  ,done: function(res){
+								//如果上传失败
+								if(res.code > 0){
+								  return layer.msg('上传失败');
+								}
+								//上传成功
+							  }
+							  ,error: function(){
+								//演示失败状态，并实现重传
+								var demoText = $('#demoText');
+								demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+								demoText.find('.demo-reload').on('click', function(){
+								  uploadInst.upload();
+								});
+							  }
+							});
+							//监听表单提交按钮
+							  form.on('submit(formDemo)', function(data){
+								layer.msg(JSON.stringify(data.field));//可提交给后台服务器，也需要一个接口				//		
+								return false;
+							  });
+							  
+						   layer.open({
+							   type:1,//弹窗类型
+							   title:"编辑商品",
+							   anim:5,//动画设置
+							   shadeClose:true,//开启点击阴影关闭
+							   area:['40%','80%'],//窗口大小
+							   title:'编辑商品',
+							   content:$("#view")//窗口内容，可以使用模板
+						   });
+					    }
+					  });
+				}
+			});
+		</script>
+	</body>
+</html>
+

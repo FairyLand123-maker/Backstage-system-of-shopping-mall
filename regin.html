@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>登录界面</title>
+		<style type="text/css">
+			*{
+				box-sizing: border-box;
+			}
+			body{
+				background: url(img/login.jpg) no-repeat center top;
+				background-size: cover;	
+			}
+			form{
+				width: 450px;
+				height: 350px;
+				position: fixed;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%,-50%);
+				background-color: rgba(0,0,0,0.5);
+				box-shadow: 0 0 25px white;
+				border-radius: 20px;
+				padding: 75px 100px;
+				text-align: center;
+			}
+			input{
+				width: 100%;
+				height: 35px;
+				margin-bottom: 20px;
+				padding-left: 20px;
+				border-radius: 5px;
+			}
+			button{
+				width: 70px;
+				height: 35px;
+				border-radius: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<form action="" method="post" id="myform">
+			<input type="text" name="user" id="" value="" placeholder="请输入用户名"/>
+			<input type="password" name="pass" id="" value="" placeholder="请输入密码" />
+			<button type="submit" style="margin-right: 50px;">登录</button>
+			<button type="button">注册</button>
+		</form>
+		<script type="text/javascript">
+			var oF=document.getElementById("myform");
+			oF.onsubmit=function(){
+				window.open("entrance.html","_self");
+				return false;
+			}
+		</script>
+	</body>
+</html>
